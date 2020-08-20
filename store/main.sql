@@ -3,14 +3,14 @@ SET SYNCHRONOUS_COMMIT = 'off';
 
 CREATE TABLE IF NOT EXISTS users (
     id bigserial not null primary key,
-    username varchar,
+    username varchar unique,
     created_at timestamptz DEFAULT now()
 );
 
 
 CREATE TABLE IF NOT EXISTS chat (
     id bigserial not null primary key,
-    name varchar,
+    name varchar unique,
     created_at timestamptz DEFAULT now()
 );
 

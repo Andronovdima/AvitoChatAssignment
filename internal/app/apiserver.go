@@ -2,7 +2,7 @@ package apiserver
 
 import (
 	"database/sql"
-	"github.com/Andronovdima/AvitoChatAssignment/store"
+	"../../store"
 	_ "github.com/lib/pq"
 	"go.uber.org/zap"
 	"log"
