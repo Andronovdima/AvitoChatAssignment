@@ -40,7 +40,6 @@ func (userRep *UserRepository) IsExist(username string) bool {
 
 }
 
-
 func (userRep *UserRepository) IsExistByID(ID string) bool {
 	row := userRep.db.QueryRow(
 		"SELECT id "+

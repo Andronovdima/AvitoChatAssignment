@@ -49,3 +49,23 @@ func (c *ChatUsecase) CreateChat(chat *models.Chat) (int64, error) {
 
 	return chat.ID, nil
 }
+
+func (c *ChatUsecase) GetListByUser(userID string) ([]models.Chat, error) {
+	err := new(models.HttpError)
+
+	isExist := c.userRep.IsExistByID(userID)
+	if !isExist {
+		err.StatusCode = http.StatusBadRequest
+		err.StringErr = "user id doesnt correct"
+		return nil, err
+	}
+
+	chats, cerr := c.chatRep.GetList(userID)
+	if cerr != nil {
+		err.StatusCode = http.StatusInternalServerError
+		err.StringErr = cerr.Error()
+		return nil, err
+	}
+
+	return chats, nil
+}

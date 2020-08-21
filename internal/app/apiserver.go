@@ -22,7 +22,7 @@ func Start() error {
 	}
 	config.BindAddr = port
 
-	url :=  os.Getenv("DATABASE_URL")
+	url := os.Getenv("DATABASE_URL")
 	if len(url) != 0 {
 		config.DatabaseURL = url
 	}
@@ -30,7 +30,7 @@ func Start() error {
 	zapLogger, _ := zap.NewProduction()
 	defer func() {
 		if err := zapLogger.Sync(); err != nil {
-			log.Println("zap logger error",err)
+			log.Println("zap logger error", err)
 		}
 	}()
 	sugaredLogger := zapLogger.Sugar()

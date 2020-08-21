@@ -82,3 +82,56 @@ func (c *ChatRepository) IsUserInChat(chatID int64, userID string) bool {
 
 	return true
 }
+
+func (c *ChatRepository) GetList(userID string) ([]models.Chat, error) {
+	var chats []models.Chat
+	rows, err := c.db.Query(
+		"SELECT * FROM ( "+
+			"SELECT chat.id, name, chat.created_at "+
+			"FROM chat_users AS c "+
+			"LEFT JOIN chat "+
+			"ON c.chat_id = chat.id "+
+			"LEFT JOIN messages "+
+			"ON c.chat_id = messages.chat_id "+
+			"WHERE c.user_id = $1 "+
+			"ORDER BY messages.created_At) as foo "+
+			"GROUP BY foo.id, foo.name, foo.created_at",
+		userID,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		ch := models.Chat{}
+		err := rows.Scan(&ch.ID, &ch.Name, &ch.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+
+		rows2, err := c.db.Query(
+			"SELECT user_id "+
+				"FROM chat_users "+
+				"WHERE chat_id = $1 ",
+			ch.ID,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		for rows2.Next() {
+			var s string
+			err := rows2.Scan(&s)
+			if err != nil {
+				return nil, err
+			}
+			ch.UsersID = append(ch.UsersID, s)
+		}
+
+		chats = append(chats, ch)
+	}
+
+	return chats, nil
+}
