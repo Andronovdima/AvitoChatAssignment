@@ -40,6 +40,22 @@ func (userRep *UserRepository) IsExist(username string) bool {
 
 }
 
+
+func (userRep *UserRepository) IsExistByID(ID string) bool {
+	row := userRep.db.QueryRow(
+		"SELECT id "+
+			"FROM users "+
+			"WHERE id = $1",
+		ID,
+	)
+	if row.Scan(&ID) != nil {
+		return false
+	}
+
+	return true
+
+}
+
 func (userRep *UserRepository) GetAllUsers() ([]models.User, error) {
 	var users []models.User
 	rows, err := userRep.db.Query(
