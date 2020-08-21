@@ -9,6 +9,11 @@ import (
 	userD "github.com/Andronovdima/AvitoChatAssignment/internal/app/users/delivery"
 	userR "github.com/Andronovdima/AvitoChatAssignment/internal/app/users/repository"
 	userU "github.com/Andronovdima/AvitoChatAssignment/internal/app/users/usecase"
+
+	messageD "github.com/Andronovdima/AvitoChatAssignment/internal/app/message/delivery"
+	messageR "github.com/Andronovdima/AvitoChatAssignment/internal/app/message/repository"
+	messageU "github.com/Andronovdima/AvitoChatAssignment/internal/app/message/usecase"
+
 	"github.com/gorilla/mux"
 	"go.uber.org/zap"
 	"net/http"
@@ -36,10 +41,13 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (s *Server) ConfigureServer(db *sql.DB) {
 	userRep := userR.NewUserRepository(db)
 	chatRep := chatR.NewChatRepository(db)
+	messageRep := messageR.NewMessageRepository(db)
 
 	userUc := userU.NewUserUsecase(userRep)
 	chatUC := chatU.NewChatUsecase(chatRep, userRep)
+	messageUc := messageU.NewMessageUsecase(chatRep, userRep, messageRep)
 
 	userD.NewUserHandler(s.Mux, *userUc, s.Logger)
 	chatD.NewChatHandler(s.Mux, *chatUC, s.Logger)
+	messageD.NewMessageHandler(s.Mux, *messageUc, s.Logger)
 }

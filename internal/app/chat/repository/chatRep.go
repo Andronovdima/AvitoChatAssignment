@@ -66,5 +66,19 @@ func (c *ChatRepository) IsExistByID(ID int64) bool {
 	}
 
 	return true
+}
 
+func (c *ChatRepository) IsUserInChat(chatID int64, userID string) bool {
+	row := c.db.QueryRow(
+		"SELECT chat_id "+
+			"FROM chat_users "+
+			"WHERE chat_id = $1 AND user_id = $2",
+		chatID,
+		userID,
+	)
+	if row.Scan(&chatID) != nil {
+		return false
+	}
+
+	return true
 }
