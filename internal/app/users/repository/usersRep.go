@@ -1,9 +1,8 @@
-
 package repository
 
 import (
-	"../../../models"
 	"database/sql"
+	"github.com/Andronovdima/AvitoChatAssignment/internal/models"
 	"net/http"
 )
 
@@ -19,8 +18,8 @@ func NewUserRepository(thisDB *sql.DB) *UserRepository {
 }
 
 func (userRep *UserRepository) Create(user *models.User) error {
-	 return userRep.db.QueryRow(
-		"INSERT INTO users (username) " +
+	return userRep.db.QueryRow(
+		"INSERT INTO users (username) "+
 			"VALUES ($1) RETURNING id",
 		user.Username,
 	).Scan(&user.ID)
@@ -28,8 +27,8 @@ func (userRep *UserRepository) Create(user *models.User) error {
 
 func (userRep *UserRepository) IsExist(username string) bool {
 	row := userRep.db.QueryRow(
-		"SELECT username " +
-			"FROM users " +
+		"SELECT username "+
+			"FROM users "+
 			"WHERE username = $1",
 		username,
 	)
@@ -72,5 +71,3 @@ func (userRep *UserRepository) GetAllUsers() ([]models.User, error) {
 
 	return users, nil
 }
-
-

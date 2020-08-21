@@ -1,10 +1,10 @@
 package delivery
 
 import (
-	"../../../models"
-	"../../respond"
-	"../usecase"
 	"encoding/json"
+	"github.com/Andronovdima/AvitoChatAssignment/internal/app/respond"
+	"github.com/Andronovdima/AvitoChatAssignment/internal/app/users/usecase"
+	"github.com/Andronovdima/AvitoChatAssignment/internal/models"
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
@@ -21,7 +21,7 @@ func NewUserHandler(m *mux.Router, uc usecase.UserUsecase, logger *zap.SugaredLo
 		logger:         logger,
 	}
 
-	m.HandleFunc("/user/add", handler.HandleCreateUser).Methods(http.MethodPost)
+	m.HandleFunc("/users/add", handler.HandleCreateUser).Methods(http.MethodPost)
 }
 
 

@@ -1,10 +1,10 @@
 package apiserver
 
 import (
-	userH "./users/delivery"
-	userR "./users/repository"
-	userU "./users/usecase"
 	"database/sql"
+	userH "github.com/Andronovdima/AvitoChatAssignment/internal/app/users/delivery"
+	userR "github.com/Andronovdima/AvitoChatAssignment/internal/app/users/repository"
+	userU "github.com/Andronovdima/AvitoChatAssignment/internal/app/users/usecase"
 	"github.com/gorilla/mux"
 	"go.uber.org/zap"
 	"net/http"

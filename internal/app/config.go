@@ -10,6 +10,6 @@ func NewConfig() *Config {
 	return &Config{
 		BindAddr:		":9000",
 		LogLevel:		"debug",
-		DatabaseURL:	"host=localhost dbname=avito-chat sslmode=disable port=5432 password=1234 user=andronovdima",
+		DatabaseURL:	"host=localhost dbname=avito-chat sslmode=disable port=5432 password=1234 user=d",
 	}
 }

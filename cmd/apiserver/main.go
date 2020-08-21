@@ -1,7 +1,7 @@
 package main
 
 import (
-	apiserver "../../internal/app"
+	apiserver "github.com/Andronovdima/AvitoChatAssignment/internal/app"
 	"log"
 )
 

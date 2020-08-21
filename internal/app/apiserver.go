@@ -2,7 +2,8 @@ package apiserver
 
 import (
 	"database/sql"
-	"../../store"
+	"fmt"
+	"github.com/Andronovdima/AvitoChatAssignment/store"
 	_ "github.com/lib/pq"
 	"go.uber.org/zap"
 	"log"
@@ -51,6 +52,9 @@ func Start() error {
 	}()
 
 	srv.ConfigureServer(db)
+
+	fmt.Println("Start server on port: " + config.BindAddr)
+
 	return http.ListenAndServe(config.BindAddr, srv)
 }
 

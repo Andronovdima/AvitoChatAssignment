@@ -1,8 +1,8 @@
 package usecase
 
 import (
-	"../../../models"
-	"../repository"
+	"github.com/Andronovdima/AvitoChatAssignment/internal/app/users/repository"
+	"github.com/Andronovdima/AvitoChatAssignment/internal/models"
 	"net/http"
 )
 
@@ -27,14 +27,12 @@ func (u *UserUsecase) CreateUser(user *models.User) (int64, error) {
 		return -1, err
 	}
 
-
 	cerr := u.UserRep.Create(user)
 	if cerr != nil {
 		err.StatusCode = http.StatusInternalServerError
 		err.StringErr = cerr.Error()
 		return -1, err
 	}
-
 
 	return user.ID, nil
 }
@@ -46,5 +44,3 @@ func (u *UserUsecase) IsExistUser(username string) bool {
 func (u *UserUsecase) GetAllUsers() ([]models.User, error) {
 	return u.UserRep.GetAllUsers()
 }
-
-
