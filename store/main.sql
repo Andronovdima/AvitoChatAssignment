@@ -1,6 +1,3 @@
-
-SET SYNCHRONOUS_COMMIT = 'off';
-
 CREATE TABLE IF NOT EXISTS users (
     id bigserial not null primary key,
     username varchar unique,
@@ -15,6 +12,7 @@ CREATE TABLE IF NOT EXISTS chat (
 );
 
 CREATE TABLE IF NOT EXISTS chat_users (
+    id bigserial not null primary key,
     chat_id bigint not null references chat,
     user_id bigint not null references users
 );

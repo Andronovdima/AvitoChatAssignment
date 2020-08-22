@@ -10,22 +10,22 @@ import (
 	"go.uber.org/zap"
 	"net/http"
 )
+
 type UserHandler struct {
 	UserUsecase usecase.UserUsecase
-	logger         *zap.SugaredLogger
+	logger      *zap.SugaredLogger
 }
 
 func NewUserHandler(m *mux.Router, uc usecase.UserUsecase, logger *zap.SugaredLogger) {
 	handler := &UserHandler{
-		UserUsecase: 	uc,
-		logger:         logger,
+		UserUsecase: uc,
+		logger:      logger,
 	}
 
 	m.HandleFunc("/users/add", handler.HandleCreateUser).Methods(http.MethodPost)
 }
 
-
-func (u *UserHandler) HandleCreateUser (w http.ResponseWriter, r *http.Request) {
+func (u *UserHandler) HandleCreateUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	defer func() {
@@ -44,7 +44,7 @@ func (u *UserHandler) HandleCreateUser (w http.ResponseWriter, r *http.Request) 
 		respond.Error(w, r, http.StatusBadRequest, err)
 		return
 	}
-	us , err := u.UserUsecase.CreateUser(thisUser)
+	us, err := u.UserUsecase.CreateUser(thisUser)
 	if err != nil {
 		rerr := err.(*models.HttpError)
 		respond.Error(w, r, rerr.StatusCode, rerr)

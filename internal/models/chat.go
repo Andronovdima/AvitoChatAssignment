@@ -7,6 +7,14 @@ import (
 type Chat struct {
 	ID        int64     `json:"id" `
 	Name      string    `json:"name" `
-	Users     []User    `json:"users" `
+	UsersID   []string  `json:"users" `
 	CreatedAt time.Time `json:"created_at" `
+}
+
+type GetChat struct {
+	User string `json:"user" `
+}
+
+type ChatID struct {
+	ChatID string `json:"chat" `
 }
