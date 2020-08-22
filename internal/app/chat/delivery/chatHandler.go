@@ -31,7 +31,8 @@ func (c *ChatHandler) HandleCreateChat(w http.ResponseWriter, r *http.Request) {
 
 	defer func() {
 		if err := r.Body.Close(); err != nil {
-			err = errors.Wrapf(err, "HandleCreateChat<-Body.Close")
+			err = errors.Wrapf(err, "ERROR : HandleCreateChat <- Body.Close")
+			c.logger.Info(err.Error())
 			respond.Error(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -41,7 +42,9 @@ func (c *ChatHandler) HandleCreateChat(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(thisChat)
 	if err != nil {
-		err = errors.Wrapf(err, "HandleCreateChat:")
+		err = errors.Wrapf(err, "ERROR : HandleCreateChat <- Decode: ")
+		c.logger.Info(err.Error())
+		err = errors.New("Invalid format data, example: '{'name': 'chat_1', 'users': ['1', '2 ']} ' ")
 		respond.Error(w, r, http.StatusBadRequest, err)
 		return
 	}
@@ -49,10 +52,12 @@ func (c *ChatHandler) HandleCreateChat(w http.ResponseWriter, r *http.Request) {
 	id, err := c.chatUsecase.CreateChat(thisChat)
 	if err != nil {
 		rerr := err.(*models.HttpError)
+		c.logger.Info("ERROR : HandleCreateChat <- CreateChat: " + rerr.Error())
 		respond.Error(w, r, rerr.StatusCode, rerr)
 		return
 	}
 
+	c.logger.Info("/chats/add || HTTP: 200")
 	respond.Respond(w, r, http.StatusCreated, id)
 	return
 }
@@ -62,7 +67,8 @@ func (c *ChatHandler) HandleGetListChats(w http.ResponseWriter, r *http.Request)
 
 	defer func() {
 		if err := r.Body.Close(); err != nil {
-			err = errors.Wrapf(err, "HandleGetListChats<-Body.Close")
+			err = errors.Wrapf(err, "ERROR : HandleGetListChats <- Body.Close")
+			c.logger.Info(err.Error())
 			respond.Error(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -72,7 +78,9 @@ func (c *ChatHandler) HandleGetListChats(w http.ResponseWriter, r *http.Request)
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(GetChatInput)
 	if err != nil {
-		err = errors.Wrapf(err, "HandleGetListChats:")
+		err = errors.Wrapf(err, "ERROR : HandleGetListChats <- Decode")
+		c.logger.Info(err.Error())
+		err = errors.New("Invalid format data, example: '{'user': '1'}' ")
 		respond.Error(w, r, http.StatusBadRequest, err)
 		return
 	}
@@ -80,10 +88,12 @@ func (c *ChatHandler) HandleGetListChats(w http.ResponseWriter, r *http.Request)
 	chats, err := c.chatUsecase.GetListByUser(GetChatInput.User)
 	if err != nil {
 		rerr := err.(*models.HttpError)
+		c.logger.Info("ERROR : HandleGetListChats <- GetListByUser: " + rerr.Error())
 		respond.Error(w, r, rerr.StatusCode, rerr)
 		return
 	}
 
+	c.logger.Info("/chats/get || HTTP: 200")
 	respond.Respond(w, r, http.StatusOK, chats)
 	return
 }

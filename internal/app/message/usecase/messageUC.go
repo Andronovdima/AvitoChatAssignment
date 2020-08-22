@@ -64,7 +64,6 @@ func (m *MessageUsecase) CreateMessage(message *models.Message) (int64, error) {
 	return message.ID, nil
 }
 
-
 func (m *MessageUsecase) GetMessages(chatID *models.ChatID) ([]models.Message, error) {
 	err := new(models.HttpError)
 
@@ -81,7 +80,7 @@ func (m *MessageUsecase) GetMessages(chatID *models.ChatID) ([]models.Message, e
 		return nil, err
 	}
 
-	messages ,cerr := m.messageRep.GetMessages(id)
+	messages, cerr := m.messageRep.GetMessages(id)
 	if cerr != nil {
 		err.StatusCode = http.StatusInternalServerError
 		err.StringErr = cerr.Error()
