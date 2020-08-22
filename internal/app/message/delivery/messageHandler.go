@@ -23,6 +23,8 @@ func NewMessageHandler(m *mux.Router, message messageUC.MessageUsecase, logger *
 	}
 
 	m.HandleFunc("/messages/add", handler.HandleCreateMessage).Methods(http.MethodPost)
+	m.HandleFunc("/messages/get", handler.HandleGetChatMessages).Methods(http.MethodPost)
+
 }
 
 func (m *MessageHandler) HandleCreateMessage(w http.ResponseWriter, r *http.Request) {
@@ -53,5 +55,36 @@ func (m *MessageHandler) HandleCreateMessage(w http.ResponseWriter, r *http.Requ
 	}
 
 	respond.Respond(w, r, http.StatusCreated, id)
+	return
+}
+
+func (m *MessageHandler) HandleGetChatMessages(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	defer func() {
+		if err := r.Body.Close(); err != nil {
+			err = errors.Wrapf(err, "HandleGetChatMessages<-Body.Close")
+			respond.Error(w, r, http.StatusInternalServerError, err)
+			return
+		}
+	}()
+
+	chatID := new(models.ChatID)
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(chatID)
+	if err != nil {
+		err = errors.Wrapf(err, "HandleGetChatMessages:")
+		respond.Error(w, r, http.StatusBadRequest, err)
+		return
+	}
+
+	messages, err := m.messageUC.GetMessages(chatID)
+	if err != nil {
+		rerr := err.(*models.HttpError)
+		respond.Error(w, r, rerr.StatusCode, rerr)
+		return
+	}
+
+	respond.Respond(w, r, http.StatusOK, messages)
 	return
 }

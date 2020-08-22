@@ -63,3 +63,30 @@ func (m *MessageUsecase) CreateMessage(message *models.Message) (int64, error) {
 
 	return message.ID, nil
 }
+
+
+func (m *MessageUsecase) GetMessages(chatID *models.ChatID) ([]models.Message, error) {
+	err := new(models.HttpError)
+
+	id, cerr := strconv.ParseInt(chatID.ChatID, 10, 64)
+	if cerr != nil {
+		err.StatusCode = http.StatusBadRequest
+		err.StringErr = "chat id isn't a number"
+	}
+
+	isExistChat := m.chatRep.IsExistByID(id)
+	if !isExistChat {
+		err.StatusCode = http.StatusBadRequest
+		err.StringErr = "chat with this id doesnt exist"
+		return nil, err
+	}
+
+	messages ,cerr := m.messageRep.GetMessages(id)
+	if cerr != nil {
+		err.StatusCode = http.StatusInternalServerError
+		err.StringErr = cerr.Error()
+		return nil, err
+	}
+
+	return messages, nil
+}

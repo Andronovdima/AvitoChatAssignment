@@ -14,3 +14,7 @@ type Chat struct {
 type GetChat struct {
 	User string `json:"user" `
 }
+
+type ChatID struct {
+	ChatID string `json:"chat" `
+}
