@@ -3,9 +3,9 @@
 ### Общая Информация
 - Основные требования находятся по ссылке: https://github.com/avito-tech/backend-trainee-assignment
 - Используется: Docker, Make, Golang, PostgreSQL
-- Внешние библиотеки: ZapLogger, GorrilaMux - в качестве мультиплексора
+- Внешние библиотеки: ZapLogger, gorrila/mux
 - Сервер работает на 9000 порту
-- путь до конфига /internal/app/config.go
+- Путь до конфига /internal/app/config.go
 - Выполнил: Андронов Дмитрий
 
 ### How to Run | Build
