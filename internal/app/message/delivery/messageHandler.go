@@ -32,7 +32,8 @@ func (m *MessageHandler) HandleCreateMessage(w http.ResponseWriter, r *http.Requ
 
 	defer func() {
 		if err := r.Body.Close(); err != nil {
-			err = errors.Wrapf(err, "HandleCreateMessage<-Body.Close")
+			err = errors.Wrapf(err, "ERROR : HandleCreateMessage <- Body.Close:")
+			m.logger.Info(err.Error())
 			respond.Error(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -42,7 +43,9 @@ func (m *MessageHandler) HandleCreateMessage(w http.ResponseWriter, r *http.Requ
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(thisMessage)
 	if err != nil {
-		err = errors.Wrapf(err, "HandleCreateMessage:")
+		err = errors.Wrapf(err, "ERROR : HandleCreateMessage <- Decode: ")
+		m.logger.Info(err.Error())
+		err = errors.New("Invalid format data, example: '{'chat': '1', 'author': '1', 'text': 'hi'}' ")
 		respond.Error(w, r, http.StatusBadRequest, err)
 		return
 	}
@@ -50,10 +53,12 @@ func (m *MessageHandler) HandleCreateMessage(w http.ResponseWriter, r *http.Requ
 	id, err := m.messageUC.CreateMessage(thisMessage)
 	if err != nil {
 		rerr := err.(*models.HttpError)
+		m.logger.Info("ERROR : HandleCreateMessage <- CreateMessage: " + rerr.Error())
 		respond.Error(w, r, rerr.StatusCode, rerr)
 		return
 	}
 
+	m.logger.Info("/messages/add || HTTP: 200")
 	respond.Respond(w, r, http.StatusCreated, id)
 	return
 }
@@ -63,7 +68,8 @@ func (m *MessageHandler) HandleGetChatMessages(w http.ResponseWriter, r *http.Re
 
 	defer func() {
 		if err := r.Body.Close(); err != nil {
-			err = errors.Wrapf(err, "HandleGetChatMessages<-Body.Close")
+			err = errors.Wrapf(err, "ERROR : HandleGetChatMessages <- Body.Close:")
+			m.logger.Info(err.Error())
 			respond.Error(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -73,7 +79,9 @@ func (m *MessageHandler) HandleGetChatMessages(w http.ResponseWriter, r *http.Re
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(chatID)
 	if err != nil {
-		err = errors.Wrapf(err, "HandleGetChatMessages:")
+		err = errors.Wrapf(err, "ERROR : HandleGetChatMessages <- Decode: ")
+		m.logger.Info(err.Error())
+		err = errors.New("Invalid format data, example: '{'chat': '1'}' ")
 		respond.Error(w, r, http.StatusBadRequest, err)
 		return
 	}
@@ -81,10 +89,12 @@ func (m *MessageHandler) HandleGetChatMessages(w http.ResponseWriter, r *http.Re
 	messages, err := m.messageUC.GetMessages(chatID)
 	if err != nil {
 		rerr := err.(*models.HttpError)
+		m.logger.Info("ERROR : HandleGetChatMessages <- GetMessages: " + rerr.Error())
 		respond.Error(w, r, rerr.StatusCode, rerr)
 		return
 	}
 
+	m.logger.Info("/messages/get || HTTP: 200")
 	respond.Respond(w, r, http.StatusOK, messages)
 	return
 }

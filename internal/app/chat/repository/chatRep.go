@@ -86,7 +86,6 @@ func (c *ChatRepository) IsUserInChat(chatID int64, userID string) bool {
 func (c *ChatRepository) GetList(userID string) ([]models.Chat, error) {
 	var chats []models.Chat
 	rows, err := c.db.Query(
-		"SELECT * FROM ( "+
 			"SELECT chat.id, name, chat.created_at "+
 			"FROM chat_users AS c "+
 			"LEFT JOIN chat "+
@@ -94,14 +93,16 @@ func (c *ChatRepository) GetList(userID string) ([]models.Chat, error) {
 			"LEFT JOIN messages "+
 			"ON c.chat_id = messages.chat_id "+
 			"WHERE c.user_id = $1 "+
-			"ORDER BY messages.created_At) as foo "+
-			"GROUP BY foo.id, foo.name, foo.created_at",
+			"ORDER BY messages.created_At DESC",
 		userID,
 	)
 
 	if err != nil {
 		return nil, err
 	}
+
+	var ids []int64
+	var isAdd bool
 
 	for rows.Next() {
 		ch := models.Chat{}
@@ -110,27 +111,37 @@ func (c *ChatRepository) GetList(userID string) ([]models.Chat, error) {
 			return nil, err
 		}
 
-		rows2, err := c.db.Query(
-			"SELECT user_id "+
-				"FROM chat_users "+
-				"WHERE chat_id = $1 ",
-			ch.ID,
-		)
-
-		if err != nil {
-			return nil, err
+		for _, i := range ids {
+			if i == ch.ID {
+				isAdd = true
+			}
 		}
 
-		for rows2.Next() {
-			var s string
-			err := rows2.Scan(&s)
+		if !isAdd {
+			rows2, err := c.db.Query(
+				"SELECT user_id "+
+					"FROM chat_users "+
+					"WHERE chat_id = $1 ",
+				ch.ID,
+			)
+
 			if err != nil {
 				return nil, err
 			}
-			ch.UsersID = append(ch.UsersID, s)
-		}
 
-		chats = append(chats, ch)
+			for rows2.Next() {
+				var s string
+				err := rows2.Scan(&s)
+				if err != nil {
+					return nil, err
+				}
+				ch.UsersID = append(ch.UsersID, s)
+			}
+
+			chats = append(chats, ch)
+			ids = append(ids, ch.ID)
+		}
+		isAdd = false
 	}
 
 	return chats, nil

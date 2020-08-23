@@ -42,18 +42,19 @@ func Start() error {
 
 	db, err := newDB(config.DatabaseURL)
 	if err != nil {
+		sugaredLogger.Error(err)
 		return err
 	}
 
 	defer func() {
 		if err := db.Close(); err != nil {
-			log.Println(err)
+			sugaredLogger.Error(err)
 		}
 	}()
 
 	srv.ConfigureServer(db)
 
-	fmt.Println("Start server on port: " + config.BindAddr)
+	fmt.Println("Start server on port " + config.BindAddr)
 
 	return http.ListenAndServe(config.BindAddr, srv)
 }
